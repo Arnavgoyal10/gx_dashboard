@@ -45,6 +45,10 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 .nav-links a { text-decoration: none; font-size: 15px; color: #cfcfd4; padding: 8px 12px; border-radius: 999px; transition: background 0.25s, color 0.25s; white-space: nowrap; }
 .nav-links a:hover { color: var(--white); background: #161616; }
 .nav-links a.on { color: var(--white); background: var(--blue); }
+.nav-links a.nav-sql { border: 1px solid #3a3a40; display: inline-flex; align-items: center; gap: 6px; }
+.nav-links a.nav-sql.on { border-color: var(--blue); }
+.nav-code { font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 12px; font-weight: 700; color: var(--blue-on-black); }
+.nav-links a.nav-sql.on .nav-code { color: var(--white); }
 .sim-pill { font-size: 13px; font-weight: 700; color: var(--warn); background: var(--warn-soft); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
 .burger { display: none; background: none; border: 0; padding: 6px; flex-direction: column; gap: 5px; }
 .burger span { display: block; width: 24px; height: 2px; background: var(--white); }
@@ -74,6 +78,8 @@ h2 { font-size: 46px; line-height: 1.08; }
 h2 em { font-size: 1.08em; }
 .intro { margin: 18px 0 0; font-size: 19px; line-height: 1.55; color: var(--grey-text); }
 .black .intro { color: var(--grey); }
+.intro a { color: var(--blue); font-weight: 600; }
+.black .intro a { color: var(--blue-on-black); }
 
 /* ---------- Buttons ---------- */
 .btn { display: inline-block; text-decoration: none; background: var(--blue); color: var(--white); font-weight: 600; font-size: 17px; letter-spacing: 0.02em; padding: 15px 42px; border-radius: 36px; border: 2px solid var(--blue); transition: transform 0.25s, background 0.25s, color 0.25s; }

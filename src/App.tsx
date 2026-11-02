@@ -10,6 +10,7 @@ import Signals from './sections/Signals';
 import Safety from './sections/Safety';
 import DeepDive from './sections/DeepDive';
 import Measured from './sections/Measured';
+import Sql from './sections/Sql';
 import Method from './sections/Method';
 import Closing from './sections/Closing';
 
@@ -48,6 +49,7 @@ export default function App() {
         <Safety d={d} />
         <DeepDive d={d} />
         <Measured />
+        <Sql />
         <Method d={d} />
       </main>
       <Closing />

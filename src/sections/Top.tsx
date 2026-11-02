@@ -3,11 +3,12 @@ import { SCENARIOS, SCENARIO_ORDER, type ScenarioId } from '../data/scenarios';
 
 export const NAV = [
   { id: 'answer', label: 'The answer' },
-  { id: 'results', label: 'Results' },
+  { id: 'results', label: 'Headline' },
   { id: 'signals', label: 'Signals' },
-  { id: 'safety', label: 'Safety' },
+  { id: 'safety', label: 'Safeguards' },
   { id: 'deep-dive', label: 'Deep dive' },
-  { id: 'measured', label: 'How it’s measured' },
+  { id: 'measured', label: 'Tracking' },
+  { id: 'sql', label: 'SQL' },
   { id: 'method', label: 'Method' },
 ];
 
@@ -26,7 +27,17 @@ export function Nav({ active }: { active: string }) {
       </a>
       <div className={`nav-links ${open ? 'open' : ''}`}>
         {NAV.map((n) => (
-          <a key={n.id} href={`#${n.id}`} className={active === n.id ? 'on' : ''} onClick={() => setOpen(false)}>
+          <a
+            key={n.id}
+            href={`#${n.id}`}
+            className={`${active === n.id ? 'on' : ''} ${n.id === 'sql' ? 'nav-sql' : ''}`}
+            onClick={() => setOpen(false)}
+          >
+            {n.id === 'sql' && (
+              <span className="nav-code" aria-hidden="true">
+                {'</>'}
+              </span>
+            )}
             {n.label}
           </a>
         ))}

@@ -23,8 +23,8 @@ export default function Signals({ d }: { d: Dashboard }) {
           }
           intro={
             <>
-              The case points to five causes of distrust. Each has one <Term t="early signal" /> that shows whether its fix worked, so we can
-              see why the headline moved, or why it didn’t. ‘Today’ is the level before launch; targets were set before the test.
+              We identified five likely causes of distrust. Each has one <Term t="early signal" /> that shows whether its fix worked, so we can see
+              why the headline moved, or why it didn’t. ‘Today’ is the level in weeks 1–2; targets were set before the test began.
             </>
           }
         />

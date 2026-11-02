@@ -7,7 +7,7 @@ const VERDICT: Record<Verdict, { word: string; tone: string; line: string }> = {
   ship: { word: 'Ship', tone: 'good', line: 'Roll Publish mode out to every email team, then to social posts.' },
   improve: { word: 'Improve, then re-test', tone: 'warn', line: 'Fix what the missed signal points to before rolling out further.' },
   stop: { word: 'Stop and fix', tone: 'bad', line: 'Do not roll out until the breached safeguard is back within its limit.' },
-  'keep-testing': { word: 'Rethink', tone: 'neutral', line: 'Go back to the causes before building more.' },
+  'keep-testing': { word: 'Stop and rethink', tone: 'bad', line: 'Neither the headline nor the signals moved. Go back to the causes before building more.' },
 };
 
 export default function Answer({ d }: { d: Dashboard }) {
@@ -52,9 +52,9 @@ export default function Answer({ d }: { d: Dashboard }) {
 
         <div className="rules">
           {[
-            { k: 'good', w: 'Ship', t: `if the headline is at least ${DESIGN.shipRatio}× the control group and every safeguard holds.` },
-            { k: 'warn', w: 'Improve', t: 'if 3 or more early signals hit target but the headline doesn’t.' },
-            { k: 'bad', w: 'Stop', t: 'if any safeguard is breached, whatever the headline says.' },
+            { k: 'good', w: 'Ship', t: `if the headline is at least ${DESIGN.shipRatio}× the control group, the gain is not luck, and every safeguard holds.` },
+            { k: 'warn', w: 'Improve', t: 'if 3 or more early signals hit target but the headline doesn’t pass the Ship rule.' },
+            { k: 'bad', w: 'Stop', t: 'if any safeguard is breached, whatever the headline says, or if nothing moves.' },
           ].map((r, i) => (
             <Reveal key={r.w} delay={i * 100} className={`rule rule-${r.k} ${v.word.startsWith(r.w) ? 'rule-on' : ''}`}>
               <b>{r.w}</b> {r.t}
@@ -79,8 +79,9 @@ export default function Answer({ d }: { d: Dashboard }) {
               {(ci.diff * 100).toFixed(1)} <span>pts</span>
             </p>
             <p className="kpi-note">
-              <Term t="confidence interval">95% range</Term>: {(ci.low * 100).toFixed(1)} to {(ci.high * 100).toFixed(1)} pts,{' '}
-              <Term t="team-level">per team</Term>. {ci.low > 0 ? 'Above zero, so unlikely to be luck.' : 'Includes zero, so it could be luck.'}
+              Gap between the <Term t="team-level">average test team</Term> and the average control team.{' '}
+              <Term t="confidence interval">95% range</Term>: {(ci.low * 100).toFixed(1)} to {(ci.high * 100).toFixed(1)} pts.{' '}
+              {ci.low > 0 ? 'Above zero, so unlikely to be luck.' : 'Includes zero, so it could be luck.'}
             </p>
           </Reveal>
           <Reveal className="kpi" delay={160}>

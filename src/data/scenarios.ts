@@ -1,5 +1,5 @@
 // Simulation inputs. Every number here is an assumption chosen to illustrate the
-// dashboard; none of them is a real result. They are shown on the Method tab.
+// dashboard; none of them is a real result. They are shown in the Method section.
 
 export type ScenarioId = 'works' | 'flat' | 'breach';
 
@@ -25,7 +25,7 @@ export interface Scenario {
   id: ScenarioId;
   label: string;
   story: string;
-  kitSetup: number; // share of test teams that finish the Brand Kit in week 1
+  kitSetup: number; // share of test teams that finish the Brand Kit in launch week (week 7)
   lightUpliftWithKit: number;
   lightUpliftNoKit: number;
   regenerations: number;

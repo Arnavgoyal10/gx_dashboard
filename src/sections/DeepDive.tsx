@@ -14,7 +14,7 @@ export default function DeepDive({ d }: { d: Dashboard }) {
               Where do drafts <em>drop out</em>, and where does it work?
             </>
           }
-          intro="Four views for finding the next thing to fix. All cover weeks 7–12, after launch."
+          intro="Four views for finding the next thing to fix. All cover weeks 7–12, after launch; the edit-type chart also shows weeks 1–2 for comparison."
         />
         <div className="grid-1-1">
           <Reveal from="left">
@@ -23,8 +23,8 @@ export default function DeepDive({ d }: { d: Dashboard }) {
               title="Where email drafts drop out"
               howTo={
                 <>
-                  Each bar is a share of all drafts the AI generated. The biggest step down for Publish mode teams is <b>{d.bottleneck.toLowerCase()}</b>
-                  , so that is the <Term t="funnel">bottleneck</Term> to look at first.
+                  Each bar is a share of all email drafts the AI generated. For Publish mode teams, the biggest drop comes at the step{' '}
+                  <b>‘{d.bottleneck.toLowerCase()}’</b>, so that is the <Term t="funnel">bottleneck</Term> to look at first.
                 </>
               }
             >
@@ -35,7 +35,7 @@ export default function DeepDive({ d }: { d: Dashboard }) {
             <Card
               className="card-grey"
               title="How much of each draft gets rewritten"
-              howTo="Bars left of the dashed line are light edits (25% or fewer words changed). If the fixes work, blue bars pile up on the left."
+              howTo="Each bar is the share of sent email drafts whose words changed by that much. Solid bars are light edits (25% or fewer words changed); faded bars are heavier rewrites. If the fixes work, blue piles up on the solid side."
             >
               <HistogramChart d={d} />
             </Card>
@@ -44,7 +44,7 @@ export default function DeepDive({ d }: { d: Dashboard }) {
             <Card
               className="card-grey"
               title="What users change when they do rewrite"
-              howTo="The main type of edit on heavily rewritten drafts. If the Brand Kit works, tone and facts shrink; what’s left is ordinary editing like length and structure."
+              howTo="The main type of edit on drafts that were rewritten more than lightly. If the Brand Kit works, tone and facts shrink; what’s left is ordinary editing like length and structure."
             >
               <EditMixChart d={d} />
             </Card>

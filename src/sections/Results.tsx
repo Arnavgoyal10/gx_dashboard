@@ -17,7 +17,8 @@ export default function Results({ d }: { d: Dashboard }) {
           intro={
             <>
               The headline metric is the share of sent email drafts where 25% or fewer of the words changed from what the AI wrote. ‘Pre 1–2’ are
-              the two weeks before launch, which set <Term t="today’s level" /> at {fmt.pct(d.today, 1)}. The goal is to double it within 90 days.
+              weeks 1–2 (Sprint 1), which set <Term t="today’s level" /> at {fmt.pct(d.today, 1)}. Weeks 3–6 are build sprints, so the charts skip
+              them. The goal is to double today’s level within 90 days of launch.
             </>
           }
         />

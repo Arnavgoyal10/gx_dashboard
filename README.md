@@ -22,8 +22,9 @@ pill buttons, fade-in on scroll). Each section answers one question:
 | 3 | **Early signals** | Did each fix do its job? One signal per cause of distrust, with today’s level, control and target. |
 | 4 | **Safeguards** | Did anything get worse? Errors reaching customers, email opens/clicks, brainstorming use, flag noise. |
 | 5 | **Deep dive** | Where drafts drop out (funnel), how much gets rewritten, what users change, and which segments it works for. |
-| 6 | **How it’s measured** | The events the product must log from Sprint 1, the data model, and the PostgreSQL behind every number (copyable). |
-| 7 | **Method** | Test design, limits, simulation inputs per scenario, and a plain-language glossary. |
+| 6 | **Tracking plan** | The events the product must log from Sprint 1 (weeks 1–2), before launch in week 7. |
+| 7 | **SQL** | The data model and PostgreSQL behind the headline, every signal and safeguard, and the funnel (copyable). Also reachable from the **SQL** item in the top menu. |
+| 8 | **Method** | Test design, limits, simulation inputs per scenario, and a plain-language glossary. |
 
 Use the **Try a scenario** bar at the top to see the decision change:
 *the fixes work* → Ship, *signals rise but the headline is flat* → Improve,
@@ -34,12 +35,13 @@ hover or tap.
 
 - 40 teams, randomised **by team** (teammates share a Brand Kit and an approver),
   stratified by regulated industry, 20 test / 20 control.
-- The two weeks before launch set today's level; weeks 7–12 compare test vs control
-  after a three-week ramp-up.
+- Weeks 1–2 (Sprint 1) set today's level; weeks 3–6 are build sprints; weeks 7–12
+  compare test vs control, with test teams taking about three weeks to ramp up.
 - `src/data/simulate.ts` generates draft-level records with a seeded random generator,
   so every load shows the same numbers.
 - `src/lib/metrics.ts` computes every figure from those records, the same way the SQL
-  in `src/content/sql.ts` would from real events. The headline difference uses a
+  in `src/content/sql.ts` would from real events. The queries were run against this
+  simulated data in PostgreSQL 16 and reproduce the dashboard's figures. The headline difference uses a
   Welch's t interval on **team-level** averages, not pooled drafts.
 
 ## Run locally

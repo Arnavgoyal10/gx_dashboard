@@ -1,38 +1,24 @@
-import { useState } from 'react';
 import { Reveal } from '../components/motion';
 import { SectionHead } from '../components/ui';
-import { EVENTS, QUERIES, TABLES } from '../content/sql';
-
-function Copy({ text }: { text: string }) {
-  const [done, setDone] = useState(false);
-  return (
-    <button
-      className="copy"
-      onClick={(e) => {
-        e.preventDefault();
-        navigator.clipboard?.writeText(text).then(() => {
-          setDone(true);
-          setTimeout(() => setDone(false), 1500);
-        });
-      }}
-    >
-      {done ? 'Copied' : 'Copy SQL'}
-    </button>
-  );
-}
+import { EVENTS } from '../content/sql';
 
 export default function Measured() {
   return (
     <section className="sec black" id="measured">
       <div className="wrap">
         <SectionHead
-          eyebrow="6 · How it’s measured"
+          eyebrow="6 · Tracking plan"
           title={
             <>
-              Every number traces back to <em>an event and a query</em>
+              Every number starts as <em>a logged event</em>
             </>
           }
-          intro="The product starts logging these events in Sprint 1, two weeks before launch, so ‘today’s level’ exists before anything changes. The SQL (PostgreSQL) below turns them into each number on this page."
+          intro={
+            <>
+              The product starts logging these events in Sprint 1 (weeks 1–2), well before launch in week 7, so today’s level is known before
+              anything changes. The <a href="#sql">SQL section</a> turns them into the numbers on this page.
+            </>
+          }
         />
 
         <Reveal className="card">
@@ -62,38 +48,6 @@ export default function Measured() {
             </table>
           </div>
         </Reveal>
-
-        <Reveal className="card">
-          <h3 className="card-title">Data model: the tables the queries read</h3>
-          <div className="chips">
-            {TABLES.map((t) => (
-              <div key={t.name} className="table-chip">
-                <code>{t.name}</code>
-                <span>{t.cols}</span>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal>
-          <h3 className="sql-title">The queries (click one to open it)</h3>
-        </Reveal>
-        <div className="sql-list">
-          {QUERIES.map((q, i) => (
-            <Reveal key={q.title} delay={i * 50}>
-              <details className="sql-item">
-                <summary>
-                  <span className="sql-h">{q.title}</span>
-                  <span className="sql-why">{q.why}</span>
-                </summary>
-                <div className="sql-wrap">
-                  <Copy text={q.sql} />
-                  <pre className="sql">{q.sql}</pre>
-                </div>
-              </details>
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   );

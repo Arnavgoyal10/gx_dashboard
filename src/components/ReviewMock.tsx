@@ -12,7 +12,7 @@ export default function ReviewMock() {
           Our Pro plan now includes <mark className="m-ok">unlimited reports</mark>
         </p>
         <p>
-          Upgrade by <mark className="m-ok">Sunday, 31 March</mark> and save <mark className="m-ok">15%</mark>
+          Upgrade by <mark className="m-ok">31 March</mark> and save <mark className="m-ok">15%</mark>
         </p>
         <p>
           <mark className="m-warn">Trusted by 10,000+ teams</mark> <span className="m-note warn">No source found</span>

@@ -1,5 +1,5 @@
 // Every number on the dashboard is computed here from draft-level records,
-// the same way the SQL on the 'Tracking plan & SQL' tab would compute it.
+// the same way the queries in the SQL section would compute it from real events.
 
 import { DESIGN } from '../data/scenarios';
 import { EDIT_TYPES, type Draft, type EditType, type Group, type Simulation } from '../data/simulate';
@@ -66,7 +66,7 @@ export interface Dashboard {
   bottleneck: string;
   segments: { name: string; test: number; control: number; ratio: number; teams: string }[];
   editMix: { type: string; before: number; test: number }[];
-  histogram: { bin: string; test: number; control: number }[];
+  histogram: { bin: string; light: boolean; test: number; control: number }[];
   counts: { drafts: number; sent: number; teams: number; testTeams: number; kitTeams: number };
 }
 
@@ -188,7 +188,7 @@ export function computeDashboard(sim: Simulation): Dashboard {
     {
       key: 'trust',
       cause: '5 · No track record',
-      name: 'Trust rating, 1–5 (‘How ready was this to send?’)',
+      name: 'Trust rating, 1–5 (‘How ready to send was this draft?’)',
       how: 'trust_rating_submitted after export',
       today: num(ratingOf(before)),
       test: num(testTrust[testTrust.length - 1].test),
@@ -232,7 +232,7 @@ export function computeDashboard(sim: Simulation): Dashboard {
       how: 'error_reported events / sent drafts',
       test: num(errT * 100),
       control: num(errC * 100),
-      limit: `No more than ${DESIGN.errorTolerancePts} above control`,
+      limit: `No rise vs control; up to ${DESIGN.errorTolerancePts} per 100 allowed for noise`,
       breached: (errT - errC) * 100 > DESIGN.errorTolerancePts,
     },
     {
@@ -241,7 +241,7 @@ export function computeDashboard(sim: Simulation): Dashboard {
       how: 'email_results_received (email tool)',
       test: `${pct(openT, 1)} / ${pct(clickT, 1)}`,
       control: `${pct(openC, 1)} / ${pct(clickC, 1)}`,
-      limit: 'Within 5% of control',
+      limit: 'No worse than control; 5% allowed for noise',
       breached: openT < openC * (1 - DESIGN.resultTolerance) || clickT < clickC * (1 - DESIGN.resultTolerance),
     },
     {
@@ -250,7 +250,7 @@ export function computeDashboard(sim: Simulation): Dashboard {
       how: 'explore_session_started per active user',
       test: num(expT, 2),
       control: num(expC, 2),
-      limit: 'Within 5% of control',
+      limit: 'No drop vs control; 5% allowed for noise',
       breached: expT < expC * (1 - DESIGN.resultTolerance),
     },
     {
@@ -271,24 +271,27 @@ export function computeDashboard(sim: Simulation): Dashboard {
   const reasons: string[] = [];
   if (breaches.length) {
     verdict = 'stop';
-    breaches.forEach((b) => reasons.push(`Safeguard breached: ${b.name.toLowerCase()} (test ${b.test} vs limit: ${b.limit.toLowerCase()}).`));
+    breaches.forEach((b) => reasons.push(
+      `Safeguard breached: ${b.name.toLowerCase()} are ${b.test} for Publish mode teams${b.control === 'n/a' ? '' : ` vs ${b.control} for control`}. Limit: ${b.limit.charAt(0).toLowerCase() + b.limit.slice(1)}.`,
+    ),
+  );
     reasons.push('A safeguard breach overrides any gain in the headline metric.');
   } else if (ratio >= DESIGN.shipRatio && ci.low > 0) {
     verdict = 'ship';
-    reasons.push(`Headline is ${num(ratio, 2)}× control (bar: ${DESIGN.shipRatio}×), and the 95% interval on the difference is above zero.`);
+    reasons.push(`Headline is ${num(ratio, 2)}× control (bar: ${DESIGN.shipRatio}×), and the 95% range of the gap is above zero, so it is unlikely to be luck.`);
     reasons.push(`All four safeguards hold. ${met} of 5 early signals hit target.`);
   } else if (met >= 3) {
     verdict = 'improve';
     reasons.push(
       ratio >= DESIGN.shipRatio
-        ? `Headline is ${num(ratio, 2)}× control, but the 95% interval on the difference includes zero, so the gain is not reliable yet. ${met} of 5 early signals hit target.`
+        ? `Headline is ${num(ratio, 2)}× control, but the 95% range of the gap includes zero, so the gain could be luck. ${met} of 5 early signals hit target.`
         : `Headline is only ${num(ratio, 2)}× control (bar: ${DESIGN.shipRatio}×), but ${met} of 5 early signals hit target.`,
     );
     const missed = signals.filter((s) => !s.met).map((s) => s.cause.split('· ')[1].toLowerCase());
     if (missed.length) reasons.push(`Signals that missed point to where to fix next: ${missed.join('; ')}.`);
   } else {
     verdict = 'keep-testing';
-    reasons.push('Neither the headline nor most early signals moved. Revisit the causes before building more.');
+    reasons.push(`Headline is ${num(ratio, 2)}× control (bar: ${DESIGN.shipRatio}×) and only ${met} of 5 early signals hit target, so the fixes are not working as designed.`);
   }
 
   // ---------- Funnel (email drafts, test weeks) ----------
@@ -339,14 +342,15 @@ export function computeDashboard(sim: Simulation): Dashboard {
   const editMix = EDIT_TYPES.map((e) => ({ type: EDIT_LABEL[e], before: mixBefore[e], test: mixTest[e] }));
 
   // ---------- Edit-share distribution ----------
-  const bins = Array.from({ length: 10 }, (_, i) => i / 10);
+  // 5-point bins, so the 25% light-edit cut-off falls exactly between two bars.
+  const bins = Array.from({ length: 20 }, (_, i) => i * 5);
   const distro = (g: Group) => {
-    const xs = by(g).filter(sentEmail).map((d) => d.wordsChangedShare as number);
-    return bins.map((b) => xs.filter((x) => x >= b && x < b + 0.1).length / xs.length);
+    const xs = by(g).filter(sentEmail).map((d) => (d.wordsChangedShare as number) * 100);
+    return bins.map((b) => xs.filter((x) => (b === 0 ? x >= 0 : x > b) && x <= b + 5).length / xs.length);
   };
   const dt = distro('test');
   const dc = distro('control');
-  const histogram = bins.map((b, i) => ({ bin: `${b * 100}–${b * 100 + 10}%`, test: dt[i], control: dc[i] }));
+  const histogram = bins.map((b, i) => ({ bin: `${b}–${b + 5}%`, light: b + 5 <= 25, test: dt[i], control: dc[i] }));
 
   return {
     today,

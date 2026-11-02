@@ -8,19 +8,19 @@ const p = (x: number) => `${Math.round(x * 100)}%`;
 
 export default function Method({ d }: { d: Dashboard }) {
   return (
-    <section className="sec white" id="method">
+    <section className="sec black" id="method">
       <div className="wrap">
         <SectionHead
-          eyebrow="7 · Method"
+          eyebrow="8 · Method"
           title={
             <>
               How the pilot is set up, and what is <em>simulated</em>
             </>
           }
-          intro="Everything needed to judge the numbers above: how teams were split, what the simulation assumes, and where it falls short."
+          intro="Everything needed to judge the numbers above: how teams were split, what the simulation assumes, where it falls short, and what each term means."
         />
         <div className="grid-1-1">
-          <Reveal className="card card-grey">
+          <Reveal className="card">
             <h3 className="card-title">Test design</h3>
             <ul className="list">
               <li>
@@ -29,16 +29,16 @@ export default function Method({ d }: { d: Dashboard }) {
               </li>
               <li>The split is balanced so regulated-industry teams (finance, health) fall evenly into both groups.</li>
               <li>
-                <b>Weeks 1–2</b> (shown as ‘Pre 1–2’): everyone uses today’s tool with tracking on, to set today’s level.{' '}
-                <b>Weeks 7–12</b>: test teams use Publish mode; control teams change nothing.
+                <b>Weeks 1–2</b> (Sprint 1, shown as ‘Pre 1–2’): everyone uses today’s tool with tracking on, to set today’s level.{' '}
+                <b>Weeks 3–6</b>: build sprints, not charted. <b>Weeks 7–12</b>: test teams use Publish mode; control teams change nothing.
               </li>
               <li>The headline difference is tested on per-team averages (Welch’s t interval), not pooled drafts.</li>
               <li>
-                This run produced {d.counts.drafts.toLocaleString()} drafts, {d.counts.sent.toLocaleString()} of them sent.
+                This run produced {d.counts.drafts.toLocaleString()} drafts in the charted weeks, {d.counts.sent.toLocaleString()} of them sent.
               </li>
             </ul>
           </Reveal>
-          <Reveal className="card card-grey" delay={120}>
+          <Reveal className="card" delay={120}>
             <h3 className="card-title">Limits of this prototype</h3>
             <ul className="list">
               <li>
@@ -53,10 +53,10 @@ export default function Method({ d }: { d: Dashboard }) {
           </Reveal>
         </div>
 
-        <Reveal className="card card-grey">
+        <Reveal className="card">
           <h3 className="card-title">Simulation inputs: assumptions, not findings</h3>
           <p className="card-text">
-            Before launch, every team behaves the same: {p(BASELINE.lightEditRate)} of sent email drafts lightly edited,{' '}
+            Before launch, and for control teams throughout, every team behaves the same: {p(BASELINE.lightEditRate)} of sent email drafts lightly edited,{' '}
             {BASELINE.regenerations} regenerations per kept draft, {BASELINE.reviewMinutes} minutes median to check a draft,{' '}
             {p(BASELINE.firstTimeApproval)} approved first time and {p(BASELINE.errorRate)} of sent drafts later found to contain an error. Each
             scenario then changes these for Publish mode teams:
@@ -84,7 +84,7 @@ export default function Method({ d }: { d: Dashboard }) {
                       </td>
                       <td>{p(s.kitSetup)}</td>
                       <td>
-                        +{p(s.lightUpliftWithKit)} / +{p(s.lightUpliftNoKit)}
+                        +{Math.round(s.lightUpliftWithKit * 100)} / +{Math.round(s.lightUpliftNoKit * 100)} pts
                       </td>
                       <td>{s.regenerations}</td>
                       <td>{s.reviewMinutes}</td>
@@ -96,9 +96,13 @@ export default function Method({ d }: { d: Dashboard }) {
               </tbody>
             </table>
           </div>
+          <p className="howto">
+            Test teams take about three weeks to reach these levels (the <b>ramp-up</b>), and every draft gets random noise, so measured results
+            differ from the inputs.
+          </p>
         </Reveal>
 
-        <Reveal className="card card-grey" >
+        <Reveal className="card">
           <h3 className="card-title">Glossary</h3>
           <dl className="glossary">
             {Object.entries(GLOSSARY).map(([k, v]) => (

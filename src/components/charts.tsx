@@ -2,6 +2,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   LabelList,
   Legend,
   Line,
@@ -20,6 +21,9 @@ const INK = '#0A0A0A';
 const pct0 = (v: number) => `${Math.round(v * 100)}%`;
 const pct1 = (v: number) => `${(v * 100).toFixed(1)}%`;
 const axis = { fontSize: 12, fill: '#4B4B55' };
+/** Round-number ticks from 0 up to just above the largest value. */
+const stepTicks = (max: number, step: number) =>
+  Array.from({ length: Math.ceil(max / step + 1e-9) + 1 }, (_, i) => +(i * step).toFixed(4));
 
 export function HeadlineChart({ d }: { d: Dashboard }) {
   return (
@@ -80,13 +84,26 @@ export function HistogramChart({ d }: { d: Dashboard }) {
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={d.histogram} margin={{ top: 20, right: 10, left: 0, bottom: 0 }} barGap={1}>
         <CartesianGrid stroke="#E8E8EC" vertical={false} />
-        <XAxis dataKey="bin" tick={{ ...axis, fontSize: 11 }} interval={0} />
-        <YAxis tickFormatter={pct0} tick={axis} width={40} />
-        <Tooltip formatter={(v: number) => pct1(v)} />
+        <XAxis dataKey="bin" tick={{ ...axis, fontSize: 11 }} ticks={['0–5%', '25–30%', '50–55%', '75–80%']} />
+        <YAxis
+          tickFormatter={pct0}
+          tick={axis}
+          width={40}
+          ticks={stepTicks(Math.max(...d.histogram.flatMap((h) => [h.test, h.control])), 0.05)}
+          domain={[0, 'dataMax']}
+        />
+        <Tooltip formatter={(v: number) => pct1(v)} labelFormatter={(l: string) => `${l} of words changed`} />
         <Legend wrapperStyle={{ fontSize: 13 }} />
-        <ReferenceLine x="20–30%" stroke={INK} strokeDasharray="4 4" label={{ value: 'Cut-off: 25% of words changed', position: 'top', fontSize: 12, fill: INK }} />
-        <Bar dataKey="test" name="Test group" fill={BLUE} />
-        <Bar dataKey="control" name="Control group" fill={GREY} />
+        <Bar dataKey="test" name="Test group" fill={BLUE}>
+          {d.histogram.map((h) => (
+            <Cell key={h.bin} fill={BLUE} fillOpacity={h.light ? 1 : 0.3} />
+          ))}
+        </Bar>
+        <Bar dataKey="control" name="Control group" fill={GREY}>
+          {d.histogram.map((h) => (
+            <Cell key={h.bin} fill={GREY} fillOpacity={h.light ? 1 : 0.3} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
@@ -98,11 +115,17 @@ export function EditMixChart({ d }: { d: Dashboard }) {
       <BarChart data={d.editMix} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <CartesianGrid stroke="#E8E8EC" vertical={false} />
         <XAxis dataKey="type" tick={axis} interval={0} />
-        <YAxis tickFormatter={pct0} tick={axis} width={40} />
+        <YAxis
+          tickFormatter={pct0}
+          tick={axis}
+          width={40}
+          ticks={stepTicks(Math.max(...d.editMix.flatMap((e) => [e.before, e.test])), 0.1)}
+          domain={[0, 'dataMax']}
+        />
         <Tooltip formatter={(v: number) => pct1(v)} />
         <Legend wrapperStyle={{ fontSize: 13 }} />
-        <Bar dataKey="before" name="Before launch (all teams)" fill={GREY} />
-        <Bar dataKey="test" name="Test group after launch" fill={BLUE} />
+        <Bar dataKey="before" name="Weeks 1–2 (all teams)" fill={GREY} />
+        <Bar dataKey="test" name="Test group, weeks 7–12" fill={BLUE} />
       </BarChart>
     </ResponsiveContainer>
   );
