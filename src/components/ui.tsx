@@ -1,29 +1,69 @@
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
+import { GLOSSARY } from '../content/glossary';
 
-export function Card({ title, subtitle, children, className = '' }: { title?: string; subtitle?: string; children: ReactNode; className?: string }) {
+/** A dotted-underlined word that explains itself on hover, focus or tap. */
+export function Term({ t, children }: { t: keyof typeof GLOSSARY | string; children?: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const id = useId();
+  const text = GLOSSARY[t];
+  if (!text) return <>{children ?? t}</>;
   return (
-    <section className={`card ${className}`}>
-      {title && <h3 className="card-title">{title}</h3>}
-      {subtitle && <p className="card-sub">{subtitle}</p>}
-      {children}
-    </section>
+    <span className="term-wrap" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button
+        type="button"
+        className="term"
+        aria-describedby={open ? id : undefined}
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+      >
+        {children ?? t}
+      </button>
+      {open && (
+        <span role="tooltip" id={id} className="term-pop">
+          <b>{t.charAt(0).toUpperCase() + t.slice(1)}</b>
+          {text}
+        </span>
+      )}
+    </span>
   );
 }
 
-export function Kpi({ label, value, detail, tone = 'default' }: { label: string; value: string; detail?: ReactNode; tone?: 'default' | 'good' | 'bad' | 'warn' }) {
+export function SectionHead({
+  eyebrow,
+  title,
+  intro,
+  center = false,
+}: {
+  eyebrow: string;
+  title: ReactNode;
+  intro?: ReactNode;
+  center?: boolean;
+}) {
   return (
-    <div className={`kpi kpi-${tone}`}>
-      <p className="kpi-label">{label}</p>
-      <p className="kpi-value">{value}</p>
-      {detail && <p className="kpi-detail">{detail}</p>}
+    <header className={`sec-head ${center ? 'center' : ''}`}>
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      {intro && <p className="intro">{intro}</p>}
+    </header>
+  );
+}
+
+export function Card({ children, className = '', title, howTo }: { children: ReactNode; className?: string; title?: string; howTo?: ReactNode }) {
+  return (
+    <div className={`card ${className}`}>
+      {title && <h3 className="card-title">{title}</h3>}
+      {children}
+      {howTo && (
+        <p className="howto">
+          <span className="howto-tag">How to read it</span> {howTo}
+        </p>
+      )}
     </div>
   );
 }
 
-export function Status({ ok, okText = 'On target', badText = 'Missed' }: { ok: boolean; okText?: string; badText?: string }) {
-  return <span className={`status ${ok ? 'status-ok' : 'status-bad'}`}>{ok ? `✓ ${okText}` : `✕ ${badText}`}</span>;
-}
-
-export function Note({ children }: { children: ReactNode }) {
-  return <p className="note">{children}</p>;
+export function Chip({ ok, okText, badText }: { ok: boolean; okText: string; badText: string }) {
+  return <span className={`chip ${ok ? 'chip-ok' : 'chip-bad'}`}>{ok ? `✓ ${okText}` : `✕ ${badText}`}</span>;
 }
