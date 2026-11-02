@@ -40,7 +40,9 @@ em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spa
 
 /* ---------- Navigation ---------- */
 .nav { position: fixed; inset: 0 0 auto 0; height: var(--nav-h); z-index: 50; display: flex; align-items: center; gap: 24px; padding: 0 28px; background: var(--black); color: var(--white); border-bottom: 1px solid var(--line-dark); }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; white-space: nowrap; }
+.brand-logo { display: block; height: 24px; width: auto; }
+.brand-sep { width: 1px; height: 22px; background: #3a3a40; }
 .nav-links { display: flex; gap: 4px; margin-left: auto; }
 .nav-links a { text-decoration: none; font-size: 15px; color: #cfcfd4; padding: 8px 12px; border-radius: 999px; transition: background 0.25s, color 0.25s; white-space: nowrap; }
 .nav-links a:hover { color: var(--white); background: #161616; }
@@ -274,11 +276,15 @@ mark { padding: 2px 8px; border-radius: 6px; }
   .nav-links a { padding: 8px 9px; font-size: 14px; }
   .safe-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 1020px) {
+@media (max-width: 1240px) {
+  /* The full menu needs ~1220px next to the logo; below that it folds into the menu button. */
   .nav-links { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; background: var(--black); padding: 10px 20px 18px; border-bottom: 1px solid var(--line-dark); }
   .nav-links.open { display: flex; }
-  .burger { display: flex; margin-left: auto; }
+  .nav-links a { padding: 8px 12px; font-size: 15px; align-self: flex-start; }
+  .burger { display: flex; }
   .sim-pill { margin-left: auto; }
+}
+@media (max-width: 1020px) {
   .scenario-inner { grid-template-columns: 1fr; gap: 8px; }
   .hero-grid, .answer-grid, .grid-2-1, .grid-1-1 { grid-template-columns: 1fr; }
   .guide, .rules { grid-template-columns: 1fr; }

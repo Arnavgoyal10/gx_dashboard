@@ -17,12 +17,8 @@ export function Nav({ active }: { active: string }) {
   return (
     <nav className="nav" aria-label="Sections">
       <a className="brand" href="#top" onClick={() => setOpen(false)}>
-        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="7" fill="#fff" />
-          <rect x="7" y="17" width="4" height="8" rx="1" fill="#0064FF" />
-          <rect x="14" y="11" width="4" height="14" rx="1" fill="#0064FF" />
-          <rect x="21" y="7" width="4" height="18" rx="1" fill="#000" />
-        </svg>
+        <img className="brand-logo" src="/galytix-logo-white.png" alt="Galytix" width={111} height={24} />
+        <span className="brand-sep" aria-hidden="true" />
         <span>Publish mode pilot</span>
       </a>
       <div className={`nav-links ${open ? 'open' : ''}`}>
